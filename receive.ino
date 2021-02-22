@@ -208,8 +208,13 @@ void listenBluetooth(){
     int pixRange = NUMPIXELS/divisor;
     Serial.println(pixRange);
     for(int pix=pixRange*i; pix<pixRange*(i+1); pix++) { // For each pixel...
-      pixels.setPixelColor(pix, pixels.Color((unsigned char)atoi(strings[i*3]), (unsigned char)atoi(strings[i*3+1]), (unsigned char)atoi(strings[i*3+2])));
+      //pixels.setPixelColor(pix, pixels.Color((unsigned char)atoi(strings[i*3]), (unsigned char)atoi(strings[i*3+1]), (unsigned char)atoi(strings[i*3+2])));
+      for(int channel = 0; channel < 3; channel++)
+      {
+        stripPixels[pix].colour[channel] = (float)atoi(strings[i*3+ channel]);
+      }
     }
+    
     pixels.show();   // Send the updated pixel colors to the hardware.
   }
  }

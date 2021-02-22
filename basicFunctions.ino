@@ -40,7 +40,6 @@ void doAreaFade()
      }
    }
   }
-  updateStrip();
 }
 
 void updateStrip()
