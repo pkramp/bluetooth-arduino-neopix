@@ -75,7 +75,7 @@ void listenInfrared()
       switch (value)
       {
        case zero:
-        mode = sColour;
+        mode = staticColour;
         break;
        case one:
         mode = fade;
@@ -99,7 +99,7 @@ void listenInfrared()
       Serial.println(snum);
       modeSelect = false;
     }
-    else if (mode == sColour){
+    else if (mode == staticColour){
       switch (value)
       {
        case one:
@@ -138,14 +138,34 @@ void listenBluetooth(){
     str = Serial.readString();
     Serial.println(str);
  }
+  if (str == "toggle")
+  {
+    activateMixing = !activateMixing;
+    return;
+  }
+  else if (str.indexOf("++")!=-1)
+  {
+    activeAreas++;
+    if (str.indexOf("0")!=-1)
+      doStaticColour();
+    return;
+  }
+  else if (str.indexOf("--")!=-1)
+  {
+    activeAreas--;
+    if (str.indexOf("0")!=-1)
+      doStaticColour();
+    return;
+  }
  if(str.length()==1) //must be mode
  {
   const unsigned char value = (unsigned char)str[0];
     switch (value)
       {
        case '0':
-        Serial.println("SColour");
-        mode = sColour;
+        Serial.println("StaticColour");
+        mode = staticColour;
+        doStaticColour();
         break;
        case '1':
         Serial.println("Fade");
@@ -194,28 +214,36 @@ void listenBluetooth(){
      index++;
      ptr = strtok(NULL, ",");  // takes a list of delimiters
  }
- if(index == 2) // assume it is speed factor
+ if(index == 2)
  {
-  speedFactor = (float)atoi(strings[0]) + 0.1 * (float)atoi(strings[1]);
+  if(strings[0][0]=='A')
+  {
+    activeAreas = (int)atoi(strings[1]);
+    if(mode == staticColour)
+      doStaticColour();
+  }
+  else{
+     // assume it is speed factor
+    speedFactor = (float)atoi(strings[0]) + 0.1 * (float)atoi(strings[1]);
+  }
  }
  else if(index != 0 && index %3 == 0)
  {
   Serial.println(index);
   int divisor = index / 3;
+  //divisor > 1 ?  mode = staticColour : mode = sColour;
   for(int i = 0; i < divisor; i++)
   {
     Serial.println(i);
     int pixRange = NUMPIXELS/divisor;
     Serial.println(pixRange);
-    for(int pix=pixRange*i; pix<pixRange*(i+1); pix++) { // For each pixel...
-      //pixels.setPixelColor(pix, pixels.Color((unsigned char)atoi(strings[i*3]), (unsigned char)atoi(strings[i*3+1]), (unsigned char)atoi(strings[i*3+2])));
+    for(int pix=pixRange*i; pix<pixRange*(i+1); pix++) {
       for(int channel = 0; channel < 3; channel++)
       {
         stripPixels[pix].colour[channel] = (float)atoi(strings[i*3+ channel]);
       }
     }
-    
-    pixels.show();   // Send the updated pixel colors to the hardware.
+    //pixels.show();   // Send the updated pixel colors to the hardware.
   }
  }
 }

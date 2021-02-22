@@ -20,7 +20,7 @@ const int rxPin = 0; //pin for hc05 communication
 // SoftwareSerial BTSerial(rxPin, txPin); // RX, TX
 // BLUEOOTH END
 //TYPEDEFS______________________________________________________________
-typedef enum mode {sColour = 0, fade = 1, multiFade = 2, endToEndFade = 3, mixFade = 4, mixFadeChaos = 5, selectorMode = 6, collision = 7, areaFade = 8, mColour = 9, surroundingCollision = 10} MODE;
+typedef enum mode {staticColour = 0, fade = 1, multiFade = 2, endToEndFade = 3, mixFade = 4, mixFadeChaos = 5, selectorMode = 6, collision = 7, areaFade = 8, surroundingCollision = 10} MODE;
 typedef enum channel {rChannel = 0, gChannel = 1, bChannel = 2} CHANNEL; 
 struct rgb {
   float colour[3] = {0,0,0};
@@ -28,15 +28,16 @@ struct rgb {
 };
 //TYPEDEFS END__________________________________________________________
 //GENERAL SETTINGS______________________________________________________
-MODE mode = areaFade;
+MODE mode = staticColour;
 float speedFactor = 10;
 struct rgb singleColour;
 float dimFactor = 0.1;
+bool activateMixing = true;
 //GENERAL SETTINGS END__________________________________________________
 //FADE SETTINGS_________________________________________________________
 //typedef unsigned char colour[3];
 struct rgb areaFadeTargets[60];
-int activeAreas = 3;
+int activeAreas = 1;
 float fadeStep = 100;
 unsigned char fadeTarget[3] = {255,255,255};
 unsigned char lastFadeTarget[3] = {0,0,0};
@@ -59,13 +60,14 @@ void setup() {
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   doSingleColour();
 
-
   for(int i = 0; i < activeAreas; i++)
   {
     areaFadeTargets[i].colour[0] = random(255);
     areaFadeTargets[i].colour[1] = random(255);
     areaFadeTargets[i].colour[2] = random(255);
   }
+  //if(mode == staticColour)
+  //  doStaticColour();
   
   Serial.println("The bluetooth gates are open.\n");
   //INFRARED
@@ -125,20 +127,6 @@ void loop()
   listenInfrared();
   
   switch(mode){
-    case sColour:
-    {
-      //manual mode
-      //doSingleColour();
-      delay(500.0);
-      break;
-    }
-    case mColour:
-    {
-      //manual mode
-      //doSingleColour();
-      delay(500.0);
-      break;
-    }
     case fade:
     {
       activeAreas = 1;
@@ -199,6 +187,5 @@ void loop()
       break;
     }
   }
-  
   updateStrip();
 }

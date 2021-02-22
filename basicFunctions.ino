@@ -15,12 +15,32 @@ void doSingleColour(char colour[])
   pixels.show();   // Send the updated pixel colors to the hardware.
 }
 
+void doStaticColour()
+{
+  for(int i = 0; i < activeAreas; i++)
+   {
+     struct rgb newColour = getRandomColour();
+     for(int channel = 0; channel<3; channel++)
+     {
+      areaFadeTargets[i].colour[channel] = newColour.colour[channel];
+     }
+   }
+  int areaSize = NUMPIXELS/activeAreas;
+  for(int area = 0; area < activeAreas; area++)
+  {
+    for(int pixel = 0 + areaSize*area; pixel < (area+1)*areaSize; pixel++)
+    {
+     for(int channel = 0; channel<3; channel++)
+       stripPixels[pixel].colour[channel] = areaFadeTargets[area].colour[channel];
+    }
+  }
+}
+
 void doAreaFade()
 {
   int areaSize = NUMPIXELS/activeAreas;
   for(int area = 0; area < activeAreas; area++)
   {
-    unsigned int refreshCount = 0;
     for(int pixel = 0 + areaSize*area; pixel < (area+1)*areaSize; pixel++)
     {
      for(int channel = 0; channel<3; channel++)
