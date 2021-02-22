@@ -175,10 +175,6 @@ void listenBluetooth(){
         Serial.println("areaFade");
         mode = areaFade;
         break;
-       case '8':
-        Serial.println("randomTotal");
-        mode = randomTotal;
-        break;
        case '9':
         Serial.println("surroundingCollision");
         mode = surroundingCollision;

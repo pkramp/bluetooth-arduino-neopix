@@ -64,7 +64,7 @@ struct rgb getRandomColour()
   if(sum<100)
     return getRandomColour();
 
-  float brightnessLevel = randomColour.colour[0] /255.0;
+  float brightnessLevel = randomColour.colour[0] / 255.0;
   if(fabs(randomColour.colour[0] / 255.0 - randomColour.colour[1] / 255.0) < 0.1 &&
      fabs(randomColour.colour[0] / 255.0 - randomColour.colour[2] / 255.0) < 0.3 )
     return getRandomColour();

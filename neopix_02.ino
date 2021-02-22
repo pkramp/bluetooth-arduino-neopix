@@ -20,7 +20,7 @@ const int rxPin = 0; //pin for hc05 communication
 // SoftwareSerial BTSerial(rxPin, txPin); // RX, TX
 // BLUEOOTH END
 //TYPEDEFS______________________________________________________________
-typedef enum mode {sColour = 0, fade = 1, multiFade = 2, endToEndFade = 3, mixFade = 4, mixFadeChaos = 5, selectorMode = 6, collision = 7, areaFade = 8, randomTotal = 9, surroundingCollision = 10} MODE;
+typedef enum mode {sColour = 0, fade = 1, multiFade = 2, endToEndFade = 3, mixFade = 4, mixFadeChaos = 5, selectorMode = 6, collision = 7, areaFade = 8, surroundingCollision = 10} MODE;
 typedef enum channel {rChannel = 0, gChannel = 1, bChannel = 2} CHANNEL; 
 struct rgb {
   float colour[3] = {0,0,0};
@@ -31,7 +31,7 @@ struct rgb {
 MODE mode = fade;
 float speedFactor = 10;
 struct rgb singleColour;
-float dimFactor = 0.2;
+float dimFactor = 0.1;
 //GENERAL SETTINGS END__________________________________________________
 //FADE SETTINGS_________________________________________________________
 //typedef unsigned char colour[3];
@@ -119,34 +119,6 @@ void doMultiFade(bool endToEnd, bool mixFade)
   pixels.show();   // Send the updated pixel colors to the hardware.
 }
 
-void doRandom(bool moving)
-{
-  if(!moving)
-  {
-    for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
-      pixels.setPixelColor(i, pixels.Color(random(255), random(255), random(255)));
-    }
-  }
-  else
-  {
-    if(currentFadePixel == fadeTargetPixel)
-    {
-        if(fadeTargetPixel > 0)
-          fadeTargetPixel = -1;
-        else
-          fadeTargetPixel = 60;      
-    }
-    else
-    {
-      if(currentFadePixel < fadeTargetPixel)
-        currentFadePixel++;
-      else if(currentFadePixel > fadeTargetPixel)
-        currentFadePixel--;
-      pixels.setPixelColor(currentFadePixel, pixels.Color(random(255), random(255), random(255)));
-    }
-  }
-  pixels.show();   // Send the updated pixel colors to the hardware.
-}
 void loop()
 {  
   listenBluetooth();
@@ -216,12 +188,6 @@ void loop()
     case areaFade:
     {
       doAreaFade();
-      delay(50.0 / speedFactor);
-      break;
-    }
-    case randomTotal:
-    {
-      doRandom(false);
       delay(50.0 / speedFactor);
       break;
     }
