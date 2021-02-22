@@ -33,8 +33,11 @@ void doAreaFade()
    fadeStep = 100;
    for(int i = 0; i < activeAreas; i++)
    {
+     struct rgb newColour = getRandomColour();
      for(int channel = 0; channel<3; channel++)
-        areaFadeTargets[i].colour[channel] = random(255);
+     {
+      areaFadeTargets[i].colour[channel] = newColour.colour[channel];
+     }
    }
   }
   updateStrip();
@@ -43,7 +46,27 @@ void doAreaFade()
 void updateStrip()
 {
   for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
-    pixels.setPixelColor(i, pixels.Color(stripPixels[i].colour[0], stripPixels[i].colour[1], stripPixels[i].colour[2]));
+    pixels.setPixelColor(i, pixels.Color(stripPixels[i].colour[0]*dimFactor, stripPixels[i].colour[1]*dimFactor, stripPixels[i].colour[2]*dimFactor));
   }
   pixels.show();   // Send the updated pixel colors to the hardware.
+}
+
+struct rgb getRandomColour()
+{
+  struct rgb randomColour;
+  float sum = 0;
+  for(int channel = 0; channel<3; channel++)
+  {
+   randomColour.colour[channel] = random(255);
+   sum += randomColour.colour[channel];
+  }
+  // recursively get new random colour if colour too dark
+  if(sum<100)
+    return getRandomColour();
+
+  float brightnessLevel = randomColour.colour[0] /255.0;
+  if(fabs(randomColour.colour[0] / 255.0 - randomColour.colour[1] / 255.0) < 0.1 &&
+     fabs(randomColour.colour[0] / 255.0 - randomColour.colour[2] / 255.0) < 0.3 )
+    return getRandomColour();
+  return randomColour;
 }

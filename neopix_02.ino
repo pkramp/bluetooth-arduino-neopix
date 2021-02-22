@@ -31,6 +31,7 @@ struct rgb {
 MODE mode = fade;
 float speedFactor = 10;
 struct rgb singleColour;
+float dimFactor = 0.2;
 //GENERAL SETTINGS END__________________________________________________
 //FADE SETTINGS_________________________________________________________
 //typedef unsigned char colour[3];
