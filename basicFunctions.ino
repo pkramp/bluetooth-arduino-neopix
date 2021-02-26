@@ -15,6 +15,15 @@ void doSingleColour(char colour[])
   pixels.show();   // Send the updated pixel colors to the hardware.
 }
 
+void doStaticColour(struct rgb colour)
+{
+  for(int pixel = 0; pixel < NUMPIXELS; pixel++)
+    {
+     for(int channel = 0; channel<3; channel++)
+       stripPixels[pixel].colour[channel] = colour.colour[channel];
+    }
+}
+
 void doStaticColour()
 {
   for(int i = 0; i < activeAreas; i++)

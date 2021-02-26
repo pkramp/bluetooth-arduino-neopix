@@ -53,21 +53,20 @@ void setup() {
   Serial.begin(9600); 
   delay(100);  
   // NEOPIXELS
-  singleColour.colour[0] = 255;
-  singleColour.colour[1] = 127;
-  singleColour.colour[2] = 36;
-  singleColour.rgbchannel = rChannel;
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
-  doSingleColour();
+  areaFadeTargets[0].colour[0] = 255;
+  areaFadeTargets[0].colour[1] = 127;
+  areaFadeTargets[0].colour[2] = 36;
+  areaFadeTargets[0].rgbchannel = rChannel;
 
-  for(int i = 0; i < activeAreas; i++)
+  for(int i = 1; i < activeAreas; i++)
   {
     areaFadeTargets[i].colour[0] = random(255);
     areaFadeTargets[i].colour[1] = random(255);
     areaFadeTargets[i].colour[2] = random(255);
   }
-  //if(mode == staticColour)
-  //  doStaticColour();
+  if(mode == staticColour)
+    doStaticColour(areaFadeTargets[0]);
   
   Serial.println("The bluetooth gates are open.\n");
   //INFRARED
