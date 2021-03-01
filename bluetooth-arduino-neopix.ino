@@ -28,11 +28,11 @@ struct rgb {
 };
 //TYPEDEFS END__________________________________________________________
 //GENERAL SETTINGS______________________________________________________
-MODE mode = staticColour;
-float speedFactor = 10;
+MODE mode = collision;
+float speedFactor = 1;
 struct rgb singleColour;
 float dimFactor = 0.2;
-bool activateMixing = true;
+bool activateMixing = false;
 //GENERAL SETTINGS END__________________________________________________
 //FADE SETTINGS_________________________________________________________
 struct rgb areaFadeTargets[60];

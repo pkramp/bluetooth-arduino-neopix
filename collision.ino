@@ -1,18 +1,20 @@
 int progressCounter = 0;
 int direction = -1;
-void doCollision(bool surroundingLights)
+void doCollision(bool showSurroundingLights)
 {
   bool particle = true;
   if(particle)
   {
     for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
-      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+      for(int channel = 0; channel < 3; channel++)
+        stripPixels[i].colour[channel] = 0;
     }
   }
   if(progressCounter == 0)
   {
     for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
-      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+      for(int channel = 0; channel < 3; channel++)
+        stripPixels[i].colour[channel] = 0;
     }
   }
   if(progressCounter == 0 || progressCounter == 30)
@@ -26,9 +28,18 @@ void doCollision(bool surroundingLights)
     direction *= -1;
   }
 
-  if(surroundingLights)
-  {
-    int range = 15;
+  if(showSurroundingLights)
+    surroundingLights();
+  pixels.setPixelColor(progressCounter, pixels.Color(fadeTarget[0],fadeTarget[1],fadeTarget[2]));
+  pixels.setPixelColor(NUMPIXELS - progressCounter, pixels.Color(lastFadeTarget[0],lastFadeTarget[1],lastFadeTarget[2]));
+  
+  progressCounter += direction;
+  pixels.show();
+}
+
+void surroundingLights()
+{
+  int range = 15;
     for(unsigned int i = 1; i <= range; i++)
     {
       float brightness = (range - i) * 0.06;
@@ -44,10 +55,4 @@ void doCollision(bool surroundingLights)
       }
       //if(progressCounter + i<
     }
-  }
-  pixels.setPixelColor(progressCounter, pixels.Color(fadeTarget[0],fadeTarget[1],fadeTarget[2]));
-  pixels.setPixelColor(NUMPIXELS - progressCounter, pixels.Color(lastFadeTarget[0],lastFadeTarget[1],lastFadeTarget[2]));
-  
-  progressCounter += direction;
-  pixels.show();
 }
