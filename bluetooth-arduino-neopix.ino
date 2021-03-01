@@ -2,23 +2,23 @@
 #include "IRLibAll.h"
 #include <SoftwareSerial.h>
 
+// NEOPIXELS START_______________________________________________________
+#define PIN       11 // The Data Pin to the strip
+#define NUMPIXELS 60 // Number of LEDs on strip
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+// NEOPIXELS END_________________________________________________________
 // INFRARED START_______________________________________________________
 IRrecvPCI myReceiver(2); //Create a receiver object to listen on pin 2
 IRdecodeNEC  myDecoder; //Create a decoder object 
 bool modeSelect = false;
 unsigned long previousSignal = 0;
 // INFRARED END_________________________________________________________
-
-// NEOPIXELS START_______________________________________________________
-#define PIN       11 // The Data Pin to the strip
-#define NUMPIXELS 60 // Number of LEDs on strip
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-// NEOPIXELS END_________________________________________________________
 // BLUEOOTH START
 const int txPin = 1; //pin for hc05 communication
 const int rxPin = 0; //pin for hc05 communication
 // SoftwareSerial BTSerial(rxPin, txPin); // RX, TX
 // BLUEOOTH END
+
 //TYPEDEFS______________________________________________________________
 typedef enum mode {staticColour = 0, fade = 1, multiFade = 2, endToEndFade = 3, mixFade = 4, mixFadeChaos = 5, selectorMode = 6, collision = 7, areaFade = 8, surroundingCollision = 10} MODE;
 typedef enum channel {rChannel = 0, gChannel = 1, bChannel = 2} CHANNEL; 
@@ -35,7 +35,6 @@ float dimFactor = 0.1;
 bool activateMixing = true;
 //GENERAL SETTINGS END__________________________________________________
 //FADE SETTINGS_________________________________________________________
-//typedef unsigned char colour[3];
 struct rgb areaFadeTargets[60];
 int activeAreas = 2;
 float fadeStep = 100;
@@ -48,7 +47,6 @@ struct rgb stripPixels[NUMPIXELS];
 //FADE SETTINGS END_____________________________________________________
 
 void setup() {
-  
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600); 
   delay(100);  
@@ -77,56 +75,10 @@ void setup() {
   Serial.println(F("Ready to receive IR signals"));
 }
 
-void doMultiFade(bool endToEnd, bool mixFade)
-{
-  if(currentFadePixel == fadeTargetPixel)
-  {
-    lastFadeTarget[0] = fadeTarget[0];
-    lastFadeTarget[1] = fadeTarget[1];
-    lastFadeTarget[2] = fadeTarget[2];
-    fadeTarget[0] = random(255);
-    fadeTarget[1] = random(255);
-    fadeTarget[2] = random(255);
-    if(!endToEnd)
-      fadeTargetPixel = random(60);
-    else{
-      if(fadeTargetPixel > 0)
-        fadeTargetPixel = -1;
-      else
-        fadeTargetPixel = 60;      
-    }
-    distance = abs(currentFadePixel - fadeTargetPixel);
-  }
-  else
-  {
-    if(currentFadePixel < fadeTargetPixel)
-      currentFadePixel++;
-    else if(currentFadePixel > fadeTargetPixel)
-      currentFadePixel--;
-    if(!mixFade)
-      pixels.setPixelColor(currentFadePixel, pixels.Color(fadeTarget[0],fadeTarget[1],fadeTarget[2]));
-    else
-    {
-//      unsigned char r = lastFadeTarget[0];
-//      unsigned char g = lastFadeTarget[1];
-//      unsigned char b = lastFadeTarget[2];
-      //EXPERIMENTAL:
-      unsigned char r = (pixels.getPixelColor(currentFadePixel) >> 16);
-      unsigned char g = (pixels.getPixelColor(currentFadePixel) >> 8);
-      unsigned char b = (pixels.getPixelColor(currentFadePixel));
-      int currentDistance = abs(currentFadePixel - fadeTargetPixel);
-      float factor = 1.0f - (float)currentDistance / (float)distance;
-      pixels.setPixelColor(currentFadePixel, pixels.Color(r + (char)(factor * (float)(fadeTarget[0] - r)),g + (char)(factor * (float)(fadeTarget[1] - g)),b + (char)(factor * (float)(fadeTarget[2]-b))));
-    }
-  }
-  pixels.show();   // Send the updated pixel colors to the hardware.
-}
-
 void loop()
 {  
   listenBluetooth();
   listenInfrared();
-  
   switch(mode){
     case fade:
     {

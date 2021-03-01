@@ -6,7 +6,6 @@ void doSingleColour()
   pixels.show();   // Send the updated pixel colors to the hardware.
 }
 
-
 void doSingleColour(char colour[])
 {
   for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
@@ -18,31 +17,23 @@ void doSingleColour(char colour[])
 void doStaticColour(struct rgb colour)
 {
   for(int pixel = 0; pixel < NUMPIXELS; pixel++)
-    {
      for(int channel = 0; channel<3; channel++)
        stripPixels[pixel].colour[channel] = colour.colour[channel];
-    }
 }
 
 void doStaticColour()
 {
   for(int i = 0; i < activeAreas; i++)
-   {
+  {
      struct rgb newColour = getRandomColour();
      for(int channel = 0; channel<3; channel++)
-     {
       areaFadeTargets[i].colour[channel] = newColour.colour[channel];
-     }
-   }
+  }
   int areaSize = NUMPIXELS/activeAreas;
   for(int area = 0; area < activeAreas; area++)
-  {
     for(int pixel = 0 + areaSize*area; pixel < (area+1)*areaSize; pixel++)
-    {
      for(int channel = 0; channel<3; channel++)
        stripPixels[pixel].colour[channel] = areaFadeTargets[area].colour[channel];
-    }
-  }
 }
 
 void doAreaFade()
@@ -92,6 +83,7 @@ struct rgb getRandomColour()
   if(sum<100)
     return getRandomColour();
 
+  // recursively get new random colour if colour too greyscale
   float brightnessLevel = randomColour.colour[0] / 255.0;
   if(fabs(randomColour.colour[0] / 255.0 - randomColour.colour[1] / 255.0) < 0.1 &&
      fabs(randomColour.colour[0] / 255.0 - randomColour.colour[2] / 255.0) < 0.3 )
@@ -101,11 +93,14 @@ struct rgb getRandomColour()
 
 void mixAreas()
 {
-  for (int i = 0; i < activeAreas - 1; i++)
-  {
-    int center = i * ((float)NUMPIXELS/(float)activeAreas) + (1.0/2.0*(float)NUMPIXELS/(float)activeAreas);
-   // float lColour[3] = areaFadeTargets[i].colour;
-   // float rColour[3] = areaFadeTargets[i+1].colour;
-   
-  }
+    int areaSize = NUMPIXELS/activeAreas;
+  for(int area = 0; area < activeAreas; area++)
+    for(int pixel = 0 + areaSize*area; pixel < (area+1)*areaSize; pixel++)
+     for(int channel = 0; channel<3; channel++)
+     {
+       int center = area * ((float)NUMPIXELS/(float)activeAreas) + (1.0/2.0*(float)NUMPIXELS/(float)activeAreas);
+       stripPixels[pixel].colour[channel] = areaFadeTargets[area].colour[channel];
+     }
+//  for (int i = 0; i < activeAreas - 1; i++)
+
 }
