@@ -37,7 +37,7 @@ bool activateMixing = true;
 //FADE SETTINGS_________________________________________________________
 //typedef unsigned char colour[3];
 struct rgb areaFadeTargets[60];
-int activeAreas = 1;
+int activeAreas = 2;
 float fadeStep = 100;
 unsigned char fadeTarget[3] = {255,255,255};
 unsigned char lastFadeTarget[3] = {0,0,0};
@@ -65,8 +65,10 @@ void setup() {
     areaFadeTargets[i].colour[1] = random(255);
     areaFadeTargets[i].colour[2] = random(255);
   }
-  if(mode == staticColour)
+  if(mode == staticColour && activeAreas == 1)
     doStaticColour(areaFadeTargets[0]);
+  else
+    doStaticColour();
   
   Serial.println("The bluetooth gates are open.\n");
   //INFRARED
@@ -186,5 +188,7 @@ void loop()
       break;
     }
   }
+  if(activateMixing)
+    mixAreas();
   updateStrip();
 }

@@ -98,3 +98,14 @@ struct rgb getRandomColour()
     return getRandomColour();
   return randomColour;
 }
+
+void mixAreas()
+{
+  for (int i = 0; i < activeAreas - 1; i++)
+  {
+    int center = i * ((float)NUMPIXELS/(float)activeAreas) + (1.0/2.0*(float)NUMPIXELS/(float)activeAreas);
+   // float lColour[3] = areaFadeTargets[i].colour;
+   // float rColour[3] = areaFadeTargets[i+1].colour;
+   
+  }
+}
