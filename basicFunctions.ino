@@ -93,14 +93,17 @@ struct rgb getRandomColour()
 
 void mixAreas()
 {
-    int areaSize = NUMPIXELS/activeAreas;
+  if(activeAreas==1 || mode == collision || mode == surroundingCollision)
+    return;
+  float areaSize = NUMPIXELS/activeAreas;
   for(int area = 0; area < activeAreas; area++)
     for(int pixel = 0 + areaSize*area; pixel < (area+1)*areaSize; pixel++)
      for(int channel = 0; channel<3; channel++)
      {
        int center = area * ((float)NUMPIXELS/(float)activeAreas) + (1.0/2.0*(float)NUMPIXELS/(float)activeAreas);
-       stripPixels[pixel].colour[channel] = areaFadeTargets[area].colour[channel];
+       float distance = abs(center-pixel);
+       float modifier = 1-(distance/(areaSize/2.0)) * (0.5);
+       int nextIndex = center + (pixel > center ? areaSize : areaSize+NUMPIXELS);
+       stripPixels[pixel].colour[channel] =  modifier * stripPixels[center].colour[channel] + (1.0 - modifier) * stripPixels[nextIndex%NUMPIXELS].colour[channel];
      }
-//  for (int i = 0; i < activeAreas - 1; i++)
-
 }
